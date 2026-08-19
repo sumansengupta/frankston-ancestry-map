@@ -21,6 +21,11 @@ jobs:
       - uses: actions/configure-pages@v5
         with:
           enablement: true
+      - name: Create social preview image
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y librsvg2-bin
+          rsvg-convert -w 1200 -h 627 social-preview.svg -o social-preview.png
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .
