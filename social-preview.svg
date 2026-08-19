@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="627" viewBox="0 0 1200 627">
+  <rect width="1200" height="627" fill="#f5f1e8"/>
+  <rect width="1200" height="72" fill="#173f3b"/>
+  <circle cx="64" cy="36" r="22" fill="#d85f3f"/><text x="64" y="44" text-anchor="middle" font-family="Georgia,serif" font-size="25" font-weight="700" fill="white">F</text>
+  <text x="101" y="32" font-family="Georgia,serif" font-size="21" font-weight="700" fill="white">Frankston Ancestry Explorer</text>
+  <text x="101" y="53" font-family="Arial,sans-serif" font-size="13" fill="#bcd0ca">2021 ABS Census · Statistical Area 1 · Esri basemap</text>
+  <text x="64" y="132" font-family="Arial,sans-serif" font-size="13" font-weight="700" letter-spacing="2" fill="#d85f3f">CULTURAL DIVERSITY AT NEIGHBOURHOOD SCALE</text>
+  <text x="64" y="187" font-family="Georgia,serif" font-size="48" font-weight="700" fill="#173f3b">Where ancestry stories live</text>
+  <text x="64" y="237" font-family="Georgia,serif" font-size="48" font-weight="700" fill="#173f3b">across Frankston</text>
+  <text x="64" y="286" font-family="Arial,sans-serif" font-size="19" fill="#647772">Explore ancestry responses across 302 SA1 neighbourhoods.</text>
+  <rect x="64" y="338" width="360" height="75" rx="14" fill="#173f3b"/>
+  <text x="86" y="367" font-family="Arial,sans-serif" font-size="14" fill="#c7d8d3">INTERACTIVE MAP</text>
+  <text x="86" y="395" font-family="Arial,sans-serif" font-size="18" font-weight="700" fill="white">Select · compare · zoom · pan</text>
+  <text x="64" y="515" font-family="Arial,sans-serif" font-size="15" fill="#647772">Australian Bureau of Statistics 2021 Census data</text>
+  <text x="64" y="543" font-family="Arial,sans-serif" font-size="15" fill="#647772">with a scrollable Esri basemap</text>
+  <rect x="510" y="112" width="626" height="454" rx="22" fill="#d8e2e1" stroke="#cbd4ce"/>
+  <path d="M530 160C650 115 720 210 835 155S1030 120 1115 180M530 260C640 220 730 320 850 270S1040 235 1120 300M535 420C650 360 735 455 850 410S1030 370 1120 445" fill="none" stroke="#b3c3c0" stroke-width="9" opacity=".7"/>
+  <g stroke="#fffdf8" stroke-width="4">
+    <path d="M735 137l82 22 13 83-66 44-72-37 5-74z" fill="#f8e9ec"/>
+    <path d="M817 159l81-1 49 67-29 69-88-52z" fill="#edc5ce"/>
+    <path d="M692 249l72 37 6 93-79 27-54-72z" fill="#d88d9f"/>
+    <path d="M764 286l78-48 76 56-18 83-130 2z" fill="#b84f69"/>
+    <path d="M918 294l87-16 55 65-21 82-139-48z" fill="#8b1e3f"/>
+    <path d="M691 406l79-27 72 59-36 91-97-21z" fill="#8b1e3f"/>
+    <path d="M770 379l130-2 28 84-122 68 36-91z" fill="#4a0d24"/>
+    <path d="M900 377l139 48-38 91-73-55z" fill="#b84f69"/>
+  </g>
+  <path d="M735 137l163 21 49 67 113 118-21 82-38 91-73-55-122 68-97-21-18-102-54-72 55-85 5-74z" fill="none" stroke="#d85f3f" stroke-width="6" stroke-dasharray="13 9"/>
+  <rect x="805" y="582" width="24" height="10" fill="#f8e9ec"/><rect x="831" y="582" width="24" height="10" fill="#edc5ce"/><rect x="857" y="582" width="24" height="10" fill="#d88d9f"/><rect x="883" y="582" width="24" height="10" fill="#b84f69"/><rect x="909" y="582" width="24" height="10" fill="#8b1e3f"/><rect x="935" y="582" width="24" height="10" fill="#4a0d24"/>
+  <text x="968" y="592" font-family="Arial,sans-serif" font-size="13" fill="#647772">Higher share</text>
+</svg>
