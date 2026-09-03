@@ -2,47 +2,115 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Frankston Road Crashes | VicRoads / DTP Open Data</title>
 
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIINfQ3yn5NKuqvMPKepO3Z6y+zq+Omn13Y="
-    crossorigin=""
-  />
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""
-  ></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <style>
-    html, body { margin: 0; height: 100%; font-family: Arial, Helvetica, sans-serif; }
-    #app { height: 100%; display: grid; grid-template-rows: auto 1fr; }
-    header { padding: 12px 16px; background: #ffffff; border-bottom: 1px solid #ddd; z-index: 1000; }
-    h1 { margin: 0 0 4px; font-size: 20px; }
-    .sub { color: #555; font-size: 13px; }
-    .controls { margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    select, button { padding: 7px 9px; border: 1px solid #bbb; border-radius: 6px; background: white; }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #fff;
+    }
+    #app {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    header {
+      flex: 0 0 auto;
+      padding: 12px 14px;
+      padding-top: max(12px, env(safe-area-inset-top));
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+      z-index: 1000;
+    }
+    h1 {
+      margin: 0 0 4px;
+      font-size: clamp(20px, 5vw, 28px);
+      line-height: 1.15;
+    }
+    .sub {
+      color: #555;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .controls {
+      margin-top: 9px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    label { font-size: 14px; }
+    select, button {
+      min-height: 38px;
+      padding: 7px 9px;
+      border: 1px solid #bbb;
+      border-radius: 7px;
+      background: #fff;
+      font-size: 14px;
+    }
     button { cursor: pointer; }
-    #status { font-size: 13px; color: #444; }
-    #map { width: 100%; height: 100%; }
-    .legend { background: rgba(255,255,255,.95); padding: 9px 11px; line-height: 18px; border-radius: 6px; box-shadow: 0 1px 5px rgba(0,0,0,.2); font-size: 12px; }
-    .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+    #status {
+      font-size: 13px;
+      color: #444;
+      white-space: nowrap;
+    }
+    #map {
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 0;
+      width: 100%;
+      overflow: hidden;
+    }
+    .leaflet-container { background: #dbe7ef; }
+    .legend {
+      background: rgba(255,255,255,.96);
+      padding: 9px 11px;
+      line-height: 18px;
+      border-radius: 6px;
+      box-shadow: 0 1px 5px rgba(0,0,0,.2);
+      font-size: 12px;
+    }
+    .legend i {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
     .fatal { background:#7f0000; }
     .serious { background:#d94801; }
     .other { background:#fdae6b; }
     .noninjury { background:#3182bd; }
+
+    @media (max-width: 600px) {
+      header { padding-left: 10px; padding-right: 10px; }
+      .sub { font-size: 12px; }
+      .controls { gap: 6px; }
+      #status { width: 100%; }
+      .legend { font-size: 11px; line-height: 16px; }
+    }
   </style>
 </head>
 <body>
 <div id="app">
   <header>
     <h1>Frankston Road Crashes</h1>
-    <div class="sub">Victoria Road Crash Data • Esri World Street Map basemap • LGA filter: Frankston</div>
+    <div class="sub">Victoria Road Crash Data • Esri World Street Map basemap • Frankston LGA</div>
     <div class="controls">
-      <label>Severity:
+      <label>
+        Severity:
         <select id="severityFilter">
           <option value="">All</option>
           <option value="1">Fatal accident</option>
@@ -51,68 +119,201 @@
           <option value="4">Non injury accident</option>
         </select>
       </label>
-      <button id="resetBtn">Reset view</button>
+      <button id="resetBtn" type="button">Reset view</button>
       <span id="status">Loading crash data…</span>
     </div>
   </header>
   <div id="map"></div>
 </div>
+
 <script>
-const map = L.map('map', { preferCanvas: true }).setView([-38.15, 145.14], 11);
-L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {maxZoom: 19, attribution: 'Tiles &copy; Esri'}).addTo(map);
+const map = L.map('map', {
+  preferCanvas: true,
+  zoomAnimation: false,
+  fadeAnimation: false,
+  markerZoomAnimation: false
+}).setView([-38.15, 145.14], 11);
+
+const esri = L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+  {
+    maxZoom: 19,
+    tileSize: 256,
+    updateWhenIdle: false,
+    keepBuffer: 4,
+    attribution: 'Tiles &copy; Esri'
+  }
+).addTo(map);
+
 const crashLayer = L.layerGroup().addTo(map);
 const resourceId = '5df1f373-0c90-48f5-80e1-7b2a35507134';
-const apiBase = 'https://discover.data.vic.gov.au/api/3/action/datastore_search';
+const apiBase = 'https://discover.data.vic.gov.au/en_AU/api/3/action/datastore_search';
 const pageSize = 1000;
 let allCrashes = [];
-function field(record, ...names) { for (const n of names) { if (record[n] !== undefined && record[n] !== null) return record[n]; } return ''; }
-function severityName(v) { const s = String(v).trim(); return ({'1':'Fatal accident','2':'Serious injury accident','3':'Other injury accident','4':'Non injury accident'})[s] || s || 'Unknown'; }
-function severityColor(v) { const s = String(v).trim(); return ({'1':'#7f0000','2':'#d94801','3':'#fdae6b','4':'#3182bd'})[s] || '#777777'; }
-function esc(v) { return String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
-function isFrankston(r) { const lga = String(field(r, 'LGA NAME', 'LGA_NAME', 'LGA Name', 'LGA')).trim().toUpperCase(); return lga === 'FRANKSTON'; }
-function normalize(r) { return { accidentNo: field(r, 'ACCIDENT NO', 'ACCIDENT_NO', 'Accident No'), date: field(r, 'ACCIDENT_DATE', 'ACCIDENT DATE', 'Accident Date'), severity: field(r, 'SEVERITY', 'Severity'), road: field(r, 'ROAD NAME', 'ROAD_NAME', 'Road Name'), roadType: field(r, 'ROAD TYPE', 'ROAD_TYPE', 'Road Type'), lat: parseFloat(field(r, 'LATITUDE', 'Latitude')), lon: parseFloat(field(r, 'LONGITUDE', 'Longitude')) }; }
+let lastBounds = null;
+
+function field(record, ...names) {
+  for (const n of names) {
+    if (record[n] !== undefined && record[n] !== null) return record[n];
+  }
+  return '';
+}
+
+function severityName(v) {
+  const s = String(v).trim();
+  return ({
+    '1':'Fatal accident',
+    '2':'Serious injury accident',
+    '3':'Other injury accident',
+    '4':'Non injury accident'
+  })[s] || s || 'Unknown';
+}
+
+function severityColor(v) {
+  const s = String(v).trim();
+  return ({
+    '1':'#7f0000',
+    '2':'#d94801',
+    '3':'#fdae6b',
+    '4':'#3182bd'
+  })[s] || '#777777';
+}
+
+function esc(v) {
+  return String(v ?? '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  })[c]);
+}
+
+function isFrankston(r) {
+  const lga = String(field(r, 'LGA_NAME', 'LGA NAME', 'LGA Name', 'LGA')).trim().toUpperCase();
+  return lga === 'FRANKSTON' || lga.startsWith('FRANKSTON ');
+}
+
+function normalize(r) {
+  return {
+    accidentNo: field(r, 'ACCIDENT_NO', 'ACCIDENT NO', 'Accident No'),
+    date: field(r, 'ACCIDENT_DATE', 'ACCIDENT DATE', 'Accident Date'),
+    severity: field(r, 'SEVERITY', 'Severity'),
+    road: field(r, 'ROAD_NAME', 'ROAD NAME', 'Road Name'),
+    roadType: field(r, 'ROAD_TYPE', 'ROAD TYPE', 'Road Type'),
+    lat: parseFloat(field(r, 'LATITUDE', 'Latitude')),
+    lon: parseFloat(field(r, 'LONGITUDE', 'Longitude'))
+  };
+}
+
+function fixMapSize() {
+  requestAnimationFrame(() => map.invalidateSize({ pan: false }));
+}
+
+window.addEventListener('resize', fixMapSize);
+window.addEventListener('orientationchange', () => {
+  setTimeout(fixMapSize, 150);
+  setTimeout(fixMapSize, 500);
+});
+window.addEventListener('pageshow', () => setTimeout(fixMapSize, 100));
+
 async function loadData() {
-  let offset = 0; let matches = [];
+  let offset = 0;
+  let matches = [];
+
   while (true) {
     const url = `${apiBase}?resource_id=${encodeURIComponent(resourceId)}&q=${encodeURIComponent('FRANKSTON')}&limit=${pageSize}&offset=${offset}`;
-    const res = await fetch(url);
+    const res = await fetch(url, { cache: 'no-store' });
     if (!res.ok) throw new Error(`Open Data API returned HTTP ${res.status}`);
+
     const json = await res.json();
     if (!json.success) throw new Error('Open Data API request was not successful.');
+
     const records = json.result.records || [];
     matches.push(...records.filter(isFrankston));
     offset += records.length;
-    document.getElementById('status').textContent = `Loading… ${matches.length.toLocaleString()} Frankston crashes found`;
+
+    document.getElementById('status').textContent =
+      `Loading… ${matches.length.toLocaleString()} Frankston crashes found`;
+
     if (records.length < pageSize || offset >= json.result.total) break;
   }
+
   const seen = new Set();
   allCrashes = matches.map(normalize).filter(c => {
     if (!Number.isFinite(c.lat) || !Number.isFinite(c.lon)) return false;
     const key = c.accidentNo || `${c.lat}|${c.lon}|${c.date}`;
     if (seen.has(key)) return false;
-    seen.add(key); return true;
+    seen.add(key);
+    return true;
   });
+
   renderCrashes();
 }
+
 function renderCrashes() {
   crashLayer.clearLayers();
   const selected = document.getElementById('severityFilter').value;
   const filtered = allCrashes.filter(c => !selected || String(c.severity).trim() === selected);
   const bounds = [];
+
   for (const c of filtered) {
-    const marker = L.circleMarker([c.lat, c.lon], {radius: 5, color: '#ffffff', weight: 1, fillColor: severityColor(c.severity), fillOpacity: 0.85});
-    marker.bindPopup(`<strong>${esc(severityName(c.severity))}</strong><br><b>Date:</b> ${esc(c.date)}<br><b>Road:</b> ${esc((c.road + ' ' + c.roadType).trim())}<br><b>Crash ID:</b> ${esc(c.accidentNo)}`);
-    marker.addTo(crashLayer); bounds.push([c.lat, c.lon]);
+    const marker = L.circleMarker([c.lat, c.lon], {
+      radius: 5,
+      color: '#ffffff',
+      weight: 1,
+      fillColor: severityColor(c.severity),
+      fillOpacity: 0.88
+    });
+
+    marker.bindPopup(`
+      <strong>${esc(severityName(c.severity))}</strong><br>
+      <b>Date:</b> ${esc(c.date)}<br>
+      <b>Road:</b> ${esc((c.road + ' ' + c.roadType).trim())}<br>
+      <b>Crash ID:</b> ${esc(c.accidentNo)}
+    `);
+
+    marker.addTo(crashLayer);
+    bounds.push([c.lat, c.lon]);
   }
-  document.getElementById('status').textContent = `${filtered.length.toLocaleString()} crashes displayed`;
-  if (bounds.length) map.fitBounds(bounds, { padding:[25,25], maxZoom: 13 });
+
+  document.getElementById('status').textContent =
+    `${filtered.length.toLocaleString()} crashes displayed`;
+
+  fixMapSize();
+
+  if (bounds.length) {
+    lastBounds = L.latLngBounds(bounds);
+    setTimeout(() => {
+      fixMapSize();
+      map.fitBounds(lastBounds, { padding: [24, 24], maxZoom: 13, animate: false });
+    }, 80);
+  }
 }
+
 document.getElementById('severityFilter').addEventListener('change', renderCrashes);
-document.getElementById('resetBtn').addEventListener('click', () => { document.getElementById('severityFilter').value = ''; renderCrashes(); });
+document.getElementById('resetBtn').addEventListener('click', () => {
+  document.getElementById('severityFilter').value = '';
+  renderCrashes();
+});
+
 const legend = L.control({position:'bottomright'});
-legend.onAdd = function() { const div = L.DomUtil.create('div','legend'); div.innerHTML = '<b>Crash severity</b><br><i class="fatal"></i>Fatal<br><i class="serious"></i>Serious injury<br><i class="other"></i>Other injury<br><i class="noninjury"></i>Non injury'; return div; };
+legend.onAdd = function() {
+  const div = L.DomUtil.create('div','legend');
+  div.innerHTML =
+    '<b>Crash severity</b><br>' +
+    '<i class="fatal"></i>Fatal<br>' +
+    '<i class="serious"></i>Serious injury<br>' +
+    '<i class="other"></i>Other injury<br>' +
+    '<i class="noninjury"></i>Non injury';
+  return div;
+};
 legend.addTo(map);
-loadData().catch(err => { console.error(err); document.getElementById('status').innerHTML = 'Could not load the live crash API. Check internet/CORS access and try again.'; });
+
+setTimeout(fixMapSize, 50);
+setTimeout(fixMapSize, 300);
+
+loadData().catch(err => {
+  console.error(err);
+  document.getElementById('status').textContent =
+    'Could not load crash data. Please refresh the page.';
+});
 </script>
 </body>
 </html>
