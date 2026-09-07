@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Frankston City Emergency Dashboard</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="strokes"><i></i><i></i><i></i></div><div><span>FRANKSTON CITY</span><strong>Emergency Dashboard</strong></div></div>
+  <nav><a href="https://www.emergency.vic.gov.au/" target="_blank">VicEmergency</a><a href="https://www.frankston.vic.gov.au/" target="_blank">Council</a><a class="call" href="tel:000">Emergency <b>000</b></a></nav>
+</header>
+<div class="notice"><b>Official information first.</b> This is a concept dashboard. Follow VicEmergency, CFA, SES, BOM and emergency-service instructions.</div>
+<main>
+<section class="hero"><div><p class="kicker">FRANKSTON CITY, VICTORIA</p><h1>Emergency and coastal conditions</h1><p>Emergency incidents, weather, fire danger and beach information in one place.</p></div><div class="live"><span></span><b id="liveStatus">Connecting to live feeds…</b></div></section>
+
+<section class="conditions">
+  <article class="panel">
+    <div class="title"><div><p class="mini">FRANKSTON BEACH</p><h2>Weather observations</h2></div><a href="https://www.bom.gov.au/products/IDV60901/IDV60901.94871.shtml" target="_blank">BOM ↗</a></div>
+    <p id="weatherTime" class="timestamp">Connecting to weather service…</p>
+    <div class="weather-grid">
+      <div class="metric"><label>Temperature</label><strong id="temp">—</strong></div><div class="metric"><label>Feels like</label><strong id="apparent">—</strong></div><div class="metric"><label>Humidity</label><strong id="humidity">—</strong></div>
+      <div class="metric"><label>Rainfall since 9am</label><strong id="rain">—</strong></div><div class="metric"><label>Pressure</label><strong id="pressure">—</strong></div><div class="metric"><label>Wind speed</label><strong id="windSpeed">—</strong></div>
+      <div class="metric"><label>Wind gust</label><strong id="windGust">—</strong></div><div class="metric"><label>Wind direction</label><strong id="windDir">—</strong></div>
+    </div>
+    <p class="source"><span id="weatherSourceState">Azure weather API not configured</span> • Source: Bureau of Meteorology</p>
+  </article>
+  <article class="panel fire-panel">
+    <div class="title"><div><p class="mini">CENTRAL FIRE DISTRICT</p><h2>Fire danger rating</h2></div><a href="https://www.cfa.vic.gov.au/warnings-restrictions/fire-bans-ratings-and-restrictions/total-fire-bans-fire-danger-ratings" target="_blank">CFA ↗</a></div>
+    <div class="gauge"><div class="arc"></div><div class="cover"></div><div class="needle"></div><div class="hub"></div></div>
+    <div class="fire-action">CHECK CFA BEFORE TRAVEL</div>
+    <div class="facts"><div><label>District</label><strong>Central</strong></div><div><label>Frankston City</label><strong>Central District</strong></div></div>
+    <p class="source">The dashboard links to the authoritative CFA rating rather than fabricating a live value.</p>
+  </article>
+</section>
+
+<section class="section-head"><div><p class="kicker">LIVE VICTORIAN INCIDENTS</p><h2>What is happening around Frankston?</h2></div><div class="count"><b id="frankstonIncidentCount">—</b><span>incidents within 25 km</span></div></section>
+<section class="map-layout"><div id="map"></div><aside><div class="aside-head"><h3>Nearby incidents</h3><span id="incidentUpdated">Loading…</span></div><div id="incidentList"><div class="empty">Connecting to Emergency Management Victoria…</div></div></aside></section>
+<p class="caption">Esri World Street Map with Frankston City LGA boundary from the Australian Bureau of Statistics. Incident points are requested from Emergency Management Victoria's public incident feed.</p>
+
+<section class="section-head"><div><p class="kicker">FRANKSTON COAST</p><h2>Smart beach</h2></div></section>
+<section class="beach">
+  <div class="tabs"><button class="tab active" data-beach="Frankston Beach">Frankston Beach</button><button class="tab" data-beach="Seaford Beach">Seaford Beach</button></div>
+  <div class="beach-grid">
+    <article class="beach-card"><h3>UV</h3><div class="body"><strong class="big" id="uvIndex">—</strong><b id="uvLevel">Azure UV API not configured</b><p id="uvAdvice">ARPANSA Melbourne UV can be routed through the Azure Function backend.</p></div></article>
+    <article class="beach-card"><h3>Water quality</h3><div class="body"><strong>EPA Beach Report</strong><p>EPA Victoria is the authoritative recreational-water-quality source. A direct Beach Report API is not used here.</p><a href="https://www.epa.vic.gov.au/check-air-and-water-quality" target="_blank">Check EPA report ↗</a></div></article>
+    <article class="beach-card"><h3>Tide</h3><div class="body"><strong>Live API not configured</strong><p>A supported anonymous Frankston tide feed has not been added.</p><a href="https://www.bom.gov.au/marine/" target="_blank">BOM marine ↗</a></div></article>
+    <article class="beach-card"><h3>Wave</h3><div class="body"><strong>—</strong><p>No reliable supported open live wave feed for Frankston/Seaford is used in this prototype.</p><span class="pill">OPEN API NOT FOUND</span></div></article>
+  </div>
+  <article class="lifeguard"><div><span>LOCAL BEACH INFORMATION</span><strong id="beachName">Frankston Beach</strong></div><p>No equivalent open Frankston/Life Saving Victoria operational feed for rips, shore break and bluebottles has been identified, so these observations are not fabricated.</p></article>
+</section>
+</main>
+<footer><div><strong>Frankston City Emergency Dashboard</strong><span>Concept prototype — not an official warning service.</span></div><div>Emergency: <b>000</b> • VicEmergency Hotline: <b>1800 226 226</b></div></footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="app.js"></script>
+</body></html>
